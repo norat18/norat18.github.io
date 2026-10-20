@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nora Tan</title>
+<meta name="description" content="Portfolio of Nora Tan — products, resume and LinkedIn.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text: #1c1b19;
+    --muted: #6b6760;
+    --border: #e7e3dc;
+    --accent: #c2492d;
+    --accent-soft: #f6e4de;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141312;
+      --surface: #1e1c1a;
+      --text: #f2efe9;
+      --muted: #a29d94;
+      --border: #2e2b28;
+      --accent: #f08a6c;
+      --accent-soft: #3a241e;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 400 16px/1.6 Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+  header { padding: 96px 0 56px; }
+  .eyebrow { color: var(--accent); font-weight: 600; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+  h1 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: clamp(40px, 8vw, 64px); line-height: 1.05; margin: 12px 0 20px; letter-spacing: -.02em; }
+  .bio { font-size: 18px; color: var(--muted); max-width: 560px; }
+
+  .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px; border-radius: 999px;
+    font-weight: 500; font-size: 15px; text-decoration: none;
+    border: 1px solid var(--border); background: var(--surface);
+    transition: transform .15s, border-color .15s;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--text); }
+  .btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn svg { width: 18px; height: 18px; }
+
+  section { padding: 40px 0 80px; }
+  h2 { font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 28px; margin-bottom: 24px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } header { padding-top: 64px; } }
+
+  .card {
+    display: block; text-decoration: none;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 24px -12px rgba(0,0,0,.18); }
+  .card.static:hover { transform: none; border-color: var(--border); box-shadow: none; }
+  .card-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+  .card h3 { font-size: 18px; font-weight: 600; }
+  .arrow { color: var(--muted); transition: color .15s, transform .15s; }
+  .card:hover .arrow { color: var(--accent); transform: translate(2px, -2px); }
+  .card p { color: var(--muted); margin-top: 8px; font-size: 15px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .tag { background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; }
+
+  footer { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+</style>
+</head>
+<body>
+<script>
+  // ✏️ Edit everything about your site here.
+  const SITE = {
+    name: "Nora Tan",
+    role: "Product & Operations Leader · Seattle",
+    bio: "I've spent 5+ years building software that runs physical systems — body cameras, drones, sensors — at Axon, Color and Skycatch. Now I'm focused on climate and energy, and I design and ship my own products end to end with Claude Code and other AI tools.",
+    linkedin: "https://www.linkedin.com/in/nora-tan",
+    resume: "resume.pdf",            // put resume.pdf next to this file, or paste a link
+    email: "ntan.nora@gmail.com",
+    // Leave url as "" to show a card without a link.
+    products: [
+      { name: "Tenant Deal Kit", url: "https://norat18.github.io/tenant-deal-kit/", description: "Lumen runs almost every step of a rooftop solar deal except getting the tenant on board. A one-page PRD and v1 prototype to close that gap.", tags: ["PRD", "Prototype", "Energy"] },
+      { name: "Energy Shift Simulator", url: "https://norat18.github.io/energy-shift-simulator/", description: "Models commercial & industrial demand response: how shifting load changes energy costs and grid impact.", tags: ["Energy", "Simulator"] },
+      { name: "PNW Ski Tours", url: "https://pnwskitours.com", description: "A backcountry ski tour planner for the Pacific Northwest, owned end to end from spec to domain and hosting.", tags: ["Web app"] },
+      { name: "Short List", url: "https://short-list-meals.web.app", description: "A meal planner built around nutrition goals, with private per-user recipe libraries on Firebase.", tags: ["Web app", "Firebase"] },
+    ],
+  };
+</script>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="role"></div>
+    <h1 id="name"></h1>
+    <p class="bio" id="bio"></p>
+    <div class="links">
+      <a class="btn primary" id="resume" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+        Resume
+      </a>
+      <a class="btn" id="linkedin" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .77 0 1.73v20.54C0 23.23.8 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+      <a class="btn" id="email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
+        Email
+      </a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Products</h2>
+    <div class="grid" id="products"></div>
+  </section>
+
+  <footer>
+    <span id="copy"></span>
+    <a href="#" onclick="scrollTo({top:0,behavior:'smooth'});return false">Back to top ↑</a>
+  </footer>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  document.title = SITE.name;
+  $("name").textContent = SITE.name;
+  $("role").textContent = SITE.role;
+  $("bio").textContent = SITE.bio;
+  $("resume").href = SITE.resume;
+  $("linkedin").href = SITE.linkedin;
+  $("email").href = "mailto:" + SITE.email;
+  $("copy").textContent = `© ${new Date().getFullYear()} ${SITE.name}`;
+
+  $("products").innerHTML = SITE.products.map(p => {
+    const body = `
+      <div class="card-top">
+        <h3>${esc(p.name)}</h3>
+        ${p.url ? `<span class="arrow">↗</span>` : ""}
+      </div>
+      <p>${esc(p.description)}</p>
+      ${p.tags?.length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}`;
+    return p.url
+      ? `<a class="card" href="${esc(p.url)}" target="_blank" rel="noopener">${body}</a>`
+      : `<div class="card static">${body}</div>`;
+  }).join("");
+</script>
+</body>
+</html>

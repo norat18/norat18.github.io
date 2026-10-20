@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Portfolio Visitors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5; --surface: #ffffff; --text: #1c1b19; --muted: #6b6760;
+    --border: #e7e3dc; --accent: #c2492d; --accent-soft: #f6e4de;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141312; --surface: #1e1c1a; --text: #f2efe9; --muted: #a29d94;
+      --border: #2e2b28; --accent: #f08a6c; --accent-soft: #3a241e;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 400 15px/1.5 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 40px 16px 80px; }
+  h1 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 34px; letter-spacing: -.01em; }
+  h2 { font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 22px; margin: 40px 0 14px; }
+  .muted { color: var(--muted); }
+  .top { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+  select, input, button { font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; }
+  button { cursor: pointer; font-weight: 500; }
+  button.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+  .tile .n { font-family: Fraunces, Georgia, serif; font-size: 34px; font-weight: 600; line-height: 1.1; }
+  .tile .l { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bar { height: 6px; background: var(--accent); border-radius: 3px; margin-top: 6px; min-width: 4px; }
+  .chip { display: inline-block; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 500; padding: 2px 9px; border-radius: 999px; margin: 0 4px 4px 0; }
+  .chip.plain { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .sub { color: var(--muted); font-size: 12.5px; }
+  .empty { padding: 28px 16px; color: var(--muted); text-align: center; }
+
+  .gate { max-width: 380px; margin: 14vh auto 0; text-align: center; }
+  .gate form { display: flex; gap: 8px; margin-top: 20px; }
+  .gate input { flex: 1; min-width: 0; }
+  .err { color: var(--accent); margin-top: 10px; font-size: 14px; min-height: 1.5em; }
+
+  .share { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .share input { flex: 1; min-width: 180px; }
+  .share code { font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; word-break: break-all; flex-basis: 100%; }
+  .hint { font-size: 13.5px; color: var(--muted); margin-top: 10px; }
+  a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .tiles { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .tile { padding: 14px; } .tile .n { font-size: 26px; }
+    .hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+  const SITE = "https://norat18.github.io/";
+  const app = document.getElementById("app");
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const store = {
+    get: k => { try { return localStorage.getItem(k); } catch { return null; } },
+    set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} },
+  };
+  let key = store.get("dash_key");
+  let days = Number(store.get("dash_days")) || 30;
+
+  // Accept the key from the link's #fragment once, then drop it from the address bar.
+  if (location.hash.length > 1) {
+    key = decodeURIComponent(location.hash.slice(1));
+    store.set("dash_key", key);
+    history.replaceState(null, "", location.pathname);
+  }
+
+  function gate(msg = "") {
+    app.innerHTML = `
+      <div class="gate">
+        <h1>Portfolio Visitors</h1>
+        <p class="muted" style="margin-top:8px">Enter your dashboard key to continue.</p>
+        <form id="f"><input id="k" type="password" autocomplete="current-password" placeholder="Dashboard key" required><button class="primary">Open</button></form>
+        <div class="err">${esc(msg)}</div>
+      </div>`;
+    document.getElementById("f").onsubmit = e => {
+      e.preventDefault();
+      key = document.getElementById("k").value.trim();
+      store.set("dash_key", key);
+      load();
+    };
+  }
+
+  const when = iso => {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ", " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  };
+  const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+  function sourceOf(v) {
+    if (v.source) return `<span class="chip">${esc(v.source)}</span>`;
+    if (v.referrer && !v.referrer.startsWith(SITE)) return esc(host(v.referrer));
+    return `<span class="muted">Direct</span>`;
+  }
+  const place = v => [v.city, v.region, v.country].filter(Boolean).join(", ");
+
+  async function load() {
+    if (!key) return gate();
+    app.innerHTML = `<p class="muted">Loading…</p>`;
+    let res;
+    try {
+      res = await fetch(`/api/data?days=${days}`, { headers: { authorization: `Bearer ${key}` } });
+    } catch { return gate("Couldn't reach the tracker. Try again."); }
+    if (res.status === 401) { store.set("dash_key", null); key = null; return gate("That key didn't work."); }
+    render(await res.json());
+  }
+
+  function render(d) {
+    const t = d.totals || {};
+    const max = Math.max(1, ...d.links.map(l => l.clicks));
+    app.innerHTML = `
+      <div class="top">
+        <div>
+          <h1>Portfolio Visitors</h1>
+          <p class="muted">Who visited <a href="${SITE}" target="_blank" rel="noopener">${host(SITE)}</a> and what they clicked</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <select id="days">${[7, 30, 90, 365].map(n => `<option value="${n}" ${n === days ? "selected" : ""}>Last ${n} days</option>`).join("")}</select>
+          <button id="refresh">Refresh</button>
+        </div>
+      </div>
+
+      <div class="tiles">
+        <div class="tile"><div class="n">${t.visits || 0}</div><div class="l">Visits</div></div>
+        <div class="tile"><div class="n">${t.people || 0}</div><div class="l">Unique visitors</div></div>
+        <div class="tile"><div class="n">${t.clicks || 0}</div><div class="l">Link clicks</div></div>
+      </div>
+
+      <h2>Link clicks</h2>
+      <div class="panel">${d.links.length ? `
+        <table>
+          <tr><th>Link</th><th class="num">Clicks</th><th class="num">People</th></tr>
+          ${d.links.map(l => `<tr>
+            <td><div>${esc(l.label)}</div><div class="sub">${esc(host(l.url))}</div><div class="bar" style="width:${(l.clicks / max) * 100}%"></div></td>
+            <td class="num">${l.clicks}</td><td class="num">${l.people}</td></tr>`).join("")}
+        </table>` : `<div class="empty">No clicks yet.</div>`}
+      </div>
+
+      <h2>Visits</h2>
+      <div class="panel">${d.visits.length ? `
+        <table>
+          <tr><th>When</th><th>Source</th><th>Location &amp; network</th><th class="hide-sm">Device</th><th>Clicked</th></tr>
+          ${d.visits.map(v => `<tr>
+            <td style="white-space:nowrap">${when(v.started)}${v.visitorVisits > 1 ? `<div class="sub">Returning · ${v.visitorVisits} visits</div>` : ""}</td>
+            <td>${sourceOf(v)}</td>
+            <td>${esc(place(v)) || `<span class="muted">Unknown</span>`}${v.org ? `<div class="sub">${esc(v.org)}</div>` : ""}</td>
+            <td class="hide-sm">${esc(v.device)}<div class="sub">${esc(v.browser)} · ${esc(v.os)}</div></td>
+            <td>${v.clicks.length ? v.clicks.map(c => `<span class="chip">${esc(c)}</span>`).join("") : `<span class="chip plain">No clicks</span>`}</td>
+          </tr>`).join("")}
+        </table>` : `<div class="empty">No visits in this period yet.</div>`}
+      </div>
+
+      <h2>Tagged share links</h2>
+      <div class="panel" style="padding:18px">
+        <div class="share">
+          <input id="tag" placeholder="Who you're sending it to, e.g. lumen" maxlength="60">
+          <button id="copy" class="primary">Copy link</button>
+          <code id="out">${SITE}</code>
+        </div>
+        <p class="hint">Visits from a tagged link show the tag in the Source column, so you can tell which application or person a visit came from.</p>
+        <p class="hint">To keep your own visits out of these numbers, open <a href="${SITE}?notrack=1" target="_blank" rel="noopener">${host(SITE)}/?notrack=1</a> once on each browser you use. <a href="#" id="logout">Sign out of this dashboard</a></p>
+      </div>`;
+
+    document.getElementById("days").onchange = e => { days = Number(e.target.value); store.set("dash_days", days); load(); };
+    document.getElementById("refresh").onclick = load;
+    const tag = document.getElementById("tag"), out = document.getElementById("out");
+    const link = () => {
+      const slug = tag.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      return slug ? `${SITE}?ref=${slug}` : SITE;
+    };
+    tag.oninput = () => { out.textContent = link(); };
+    document.getElementById("copy").onclick = async e => {
+      try { await navigator.clipboard.writeText(link()); e.target.textContent = "Copied"; setTimeout(() => e.target.textContent = "Copy link", 1500); } catch {}
+    };
+    document.getElementById("logout").onclick = e => { e.preventDefault(); store.set("dash_key", null); key = null; gate(); };
+  }
+
+  load();
+</script>
+</body>
+</html>

@@ -103,15 +103,15 @@
     <h1 id="name"></h1>
     <p class="bio" id="bio"></p>
     <div class="links">
-      <a class="btn primary" id="resume" target="_blank" rel="noopener">
+      <a class="btn primary" id="resume" data-track="Resume" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
         Resume
       </a>
-      <a class="btn" id="linkedin" target="_blank" rel="noopener">
+      <a class="btn" id="linkedin" data-track="LinkedIn" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .77 0 1.73v20.54C0 23.23.8 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
         LinkedIn
       </a>
-      <a class="btn" id="email">
+      <a class="btn" id="email" data-track="Email">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
         Email
       </a>
@@ -150,9 +150,36 @@
       </div>
       <p>${esc(p.description)}</p>`;
     return p.url
-      ? `<a class="card" href="${esc(p.url)}" target="_blank" rel="noopener">${body}</a>`
+      ? `<a class="card" href="${esc(p.url)}" data-track="${esc(p.name)}" target="_blank" rel="noopener">${body}</a>`
       : `<div class="card static">${body}</div>`;
   }).join("");
+</script>
+<script>
+  // Visit and link-click tracking. Open the site once with ?notrack=1 to exclude your own browser (?notrack=0 undoes it).
+  (() => {
+    const API = "https://portfolio-tracker.lease-reader.workers.dev/e";
+    const qs = new URLSearchParams(location.search);
+    const id = (store, k, make) => { try { let v = store.getItem(k); if (!v && make) { v = make(); store.setItem(k, v); } return v; } catch { return make ? make() : null; } };
+    try {
+      if (qs.get("notrack") === "1") localStorage.setItem("pt_off", "1");
+      if (qs.get("notrack") === "0") localStorage.removeItem("pt_off");
+      if (localStorage.getItem("pt_off")) return;
+    } catch {}
+    const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const base = {
+      visitor: id(localStorage, "pt_vid", uid),
+      session: id(sessionStorage, "pt_sid", uid),
+      source: (() => { try { if (qs.get("ref")) sessionStorage.setItem("pt_ref", qs.get("ref")); return sessionStorage.getItem("pt_ref"); } catch { return qs.get("ref"); } })(),
+      path: location.pathname,
+      referrer: document.referrer,
+    };
+    const send = d => { try { navigator.sendBeacon(API, JSON.stringify({ ...base, ...d })); } catch {} };
+    send({ type: "view" });
+    document.addEventListener("click", e => {
+      const a = e.target.closest("a[data-track]");
+      if (a) send({ type: "click", label: a.dataset.track, url: a.href });
+    });
+  })();
 </script>
 </body>
 </html>

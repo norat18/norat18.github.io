@@ -73,8 +73,6 @@
   .arrow { color: var(--muted); transition: color .15s, transform .15s; }
   .card:hover .arrow { color: var(--accent); transform: translate(2px, -2px); }
   .card p { color: var(--muted); margin-top: 8px; font-size: 15px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
-  .tag { background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; }
 
   footer { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 </style>
@@ -91,10 +89,10 @@
     email: "ntan.nora@gmail.com",
     // Leave url as "" to show a card without a link.
     products: [
-      { name: "Tenant Deal Kit", url: "https://norat18.github.io/tenant-deal-kit/", description: "Lumen runs almost every step of a rooftop solar deal except getting the tenant on board. A one-page PRD and v1 prototype to close that gap.", tags: ["PRD", "Prototype", "Energy"] },
-      { name: "Energy Shift Simulator", url: "https://norat18.github.io/energy-shift-simulator/", description: "Models commercial & industrial demand response: how shifting load changes energy costs and grid impact.", tags: ["Energy", "Simulator"] },
-      { name: "PNW Ski Tours", url: "https://pnwskitours.com", description: "A backcountry ski tour planner for the Pacific Northwest, owned end to end from spec to domain and hosting.", tags: ["Web app"] },
-      { name: "Short List", url: "https://short-list-meals.web.app", description: "A meal planner built around nutrition goals, with private per-user recipe libraries on Firebase.", tags: ["Web app", "Firebase"] },
+      { name: "Tenant Deal Kit", url: "https://norat18.github.io/tenant-deal-kit/", description: "Lumen runs almost every step of a rooftop solar deal except getting the tenant on board. A one-page PRD and v1 prototype to close that gap." },
+      { name: "Energy Shift Simulator", url: "https://norat18.github.io/energy-shift-simulator/", description: "Models commercial & industrial demand response: how shifting load changes energy costs and grid impact." },
+      { name: "PNW Ski Tours", url: "https://pnwskitours.com", description: "A backcountry ski tour planner for the Pacific Northwest, owned end to end from spec to domain and hosting." },
+      { name: "Short List", url: "https://short-list-meals.web.app", description: "A meal planner built around nutrition goals, with private per-user recipe libraries on Firebase." },
     ],
   };
 </script>
@@ -150,8 +148,7 @@
         <h3>${esc(p.name)}</h3>
         ${p.url ? `<span class="arrow">↗</span>` : ""}
       </div>
-      <p>${esc(p.description)}</p>
-      ${p.tags?.length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}`;
+      <p>${esc(p.description)}</p>`;
     return p.url
       ? `<a class="card" href="${esc(p.url)}" target="_blank" rel="noopener">${body}</a>`
       : `<div class="card static">${body}</div>`;
